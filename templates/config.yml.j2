@@ -1,0 +1,16 @@
+server:
+  log_level: info
+
+metrics:
+  wal_directory: /tmp/agent
+  global:
+    scrape_interval: 5s
+    remote_write:
+      - url: "{{ prometheus_rw_server_url }}"
+        basic_auth:
+          username: "{{ prometheus_rw_username }}"
+          password: "{{ prometheus_rw_password }}"
+
+integrations:
+  node_exporter:
+    enabled: true

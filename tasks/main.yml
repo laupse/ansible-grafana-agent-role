@@ -25,8 +25,8 @@
     mode: "0755"
 
 - name: Create config file for Grafana Agent
-  ansible.builtin.copy:
-    src: "{{ agent_config_local_path }}"
+  ansible.builtin.template:
+    src: "config.yml.j2"
     dest: "{{ agent_config_location }}/agent-config.yaml"
     mode: "0644"
 
