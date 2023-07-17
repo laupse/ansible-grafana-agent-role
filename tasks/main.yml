@@ -37,7 +37,7 @@
     shell: /bin/false
 
 - name: Create service file for Grafana Agent
-  ansible.builtin.copy:
+  ansible.builtin.template:
     dest: "/etc/systemd/system/grafana_agent.service"
     src: "service.j2"
     mode: "0400"
