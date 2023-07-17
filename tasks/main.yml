@@ -1,0 +1,50 @@
+---
+# tasks file for grafana_agent
+- name: Install unzip
+  ansible.builtin.package:
+    name: unzip
+    state: present
+
+- name: Download Grafana Agent binary
+  ansible.builtin.get_url:
+    url: "https://github.com/grafana/agent/releases/download/{{ agent_version }}/grafana-agent-{{ linux_architecture }}.zip"
+    dest: "/tmp/agent-linux.zip"
+    mode: "0644"
+
+- name: Unarchive Grafana Agent binary
+  ansible.builtin.unarchive:
+    src: "/tmp/agent-linux.zip"
+    dest: "{{ agent_binary_location }}"
+    remote_src: true
+    mode: "0755"
+
+- name: Create directory for Grafana Agent
+  ansible.builtin.file:
+    path: "{{ agent_config_location }}"
+    state: directory
+    mode: "0755"
+
+- name: Create config file for Grafana Agent
+  ansible.builtin.copy:
+    src: "{{ agent_config_local_path }}"
+    dest: "{{ agent_config_location }}/agent-config.yaml"
+    mode: "0644"
+
+- name: Add user 'grafana_agent'
+  ansible.builtin.user:
+    name: grafana_agent
+    create_home: false
+    shell: /bin/false
+
+- name: Create service file for Grafana Agent
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/grafana_agent.service"
+    src: "service.j2"
+    mode: "0400"
+
+- name: Start Grafana Agent service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: grafana_agent
+    enabled: true
+    state: restarted
